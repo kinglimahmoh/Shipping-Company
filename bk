@@ -1,0 +1,18 @@
+from flask import Flask, request
+
+app = Flask(__name__)
+
+@app.route('/shipping', methods=['POST'])
+def shipping():
+    sender = request.form.get('sender')
+    recipient = request.form.get('recipient')
+    weight = request.form.get('weight')
+
+    # You can add your business logic here to calculate the shipping cost, 
+    # store the shipping information in a database, or perform any other 
+    # necessary actions.
+
+    return "Shipping information received: Sender - {}, Recipient - {}, Weight - {}".format(sender, recipient, weight)
+
+if __name__ == '__main__':
+    app.run(debug=True)
