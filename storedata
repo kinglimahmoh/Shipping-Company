@@ -1,0 +1,33 @@
+from flask import Flask, request
+import sqlite3
+
+app = Flask(__name__)
+
+def get_db():
+    db = sqlite3.connect('shipping.db')
+    return db
+
+@app.route('/shipping', methods=['POST'])
+def shipping():
+    sender = request.form.get('sender')
+    recipient = request.form.get('recipient')
+    weight = float(request.form.get('weight'))
+
+    shipping_cost = 4.99 if weight > 5 else 0
+
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute("INSERT INTO shipping (sender, recipient, weight, cost) VALUES (?, ?, ?, ?)",
+                   (sender, recipient, weight, shipping_cost))
+    db.commit()
+    db.close()
+
+    return "Shipping information received: Sender - {}, Recipient - {}, Weight - {}, Cost - {:.2f} Euro".format(sender, recipient, weight, shipping_cost)
+
+if __name__ == '__main__':
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute("CREATE TABLE IF NOT EXISTS shipping (id INTEGER PRIMARY KEY AUTOINCREMENT, sender TEXT, recipient TEXT, weight REAL, cost REAL)")
+    db.commit()
+    db.close()
+    app.run(debug=True)
